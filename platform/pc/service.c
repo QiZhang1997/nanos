@@ -416,8 +416,8 @@ static void __attribute__((noinline)) init_service_new_stack()
     init_runtime(misc, locked);
     init_tuples(allocate_tagged_region(kh, tag_tuple));
     init_symbols(allocate_tagged_region(kh, tag_symbol), misc);
-    init_sg(misc);
-    init_pagecache(misc, misc, (heap)heap_physical(kh), PAGESIZE);
+    init_sg(locked);
+    init_pagecache(locked, locked, (heap)heap_physical(kh), PAGESIZE);
     unmap(0, PAGESIZE);         /* unmap zero page */
     reclaim_regions();          /* unmap and reclaim stage2 stack */
     init_extra_prints();
