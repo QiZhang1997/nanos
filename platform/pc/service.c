@@ -233,7 +233,7 @@ closure_function(5, 1, void, mbr_read,
 closure_function(0, 3, void, attach_storage,
                  block_io, r, block_io, w, u64, length)
 {
-    heap h = heap_general(&heaps);
+    heap h = heap_locked(&heaps); /* to create fs under locked heap */
 
     /* Look for partition table */
     u8 *mbr = allocate(h, SECTOR_SIZE);
@@ -475,7 +475,7 @@ static void __attribute__((noinline)) init_service_new_stack()
     init_net(kh);
 
     init_debug("probe fs, register storage drivers");
-    init_volumes(misc);
+    init_volumes(locked);
     storage_attach sa = closure(misc, attach_storage);
 
     boolean hyperv_storvsc_attached = false;
