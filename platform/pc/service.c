@@ -535,8 +535,7 @@ static range find_initial_pages(void)
 
 static id_heap init_physical_id_heap(heap h)
 {
-    /* XXX change to locking after removing wrapper in page.c */
-    id_heap physical = allocate_id_heap(h, h, PAGESIZE, false);
+    id_heap physical = allocate_id_heap(h, h, PAGESIZE, true);
     boolean found = false;
     init_debug("physical memory:");
     for_regions(e) {
@@ -581,8 +580,10 @@ static void init_kernel_heaps()
     heaps.virtual_page = create_id_heap_backed(&bootstrap, &bootstrap, (heap)heaps.virtual_huge, PAGESIZE, true);
     assert(heaps.virtual_page != INVALID_ADDRESS);
 
-    heaps.physical = init_page_tables(&bootstrap, init_physical_id_heap(&bootstrap), find_initial_pages());
+    heaps.physical = init_physical_id_heap(&bootstrap);
     assert(heaps.physical != INVALID_ADDRESS);
+
+    init_page_tables(&bootstrap, heaps.physical, find_initial_pages());
 
     heaps.backed = locking_heap_wrapper(&bootstrap, physically_backed(&bootstrap, (heap)heaps.virtual_page, (heap)heaps.physical, PAGESIZE), PAGESIZE);
     assert(heaps.backed != INVALID_ADDRESS);
